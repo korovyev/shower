@@ -10,12 +10,16 @@ import (
 	"github.com/nictuku/dht"
 )
 
+// PeerProducer produces peers - TODO: proper documenting
+type PeerProducer struct {
+	foundPeers chan Peer
+}
+
 const (
 	httpPortTCP = 8711
-	dhtPortUDP  = 11221
 )
 
-func startDHT(infoHash string) {
+func (p *PeerProducer) startDHT(infoHash string) {
 	ih, err := dht.DecodeInfoHash(infoHash)
 	if err != nil {
 		fmt.Printf("DecodeInfoHash error: %v\n", err)
@@ -36,7 +40,7 @@ func startDHT(infoHash string) {
 		os.Exit(1)
 	}
 
-	go drainresults(d)
+	go p.drainresults(d)
 
 	for {
 		// Give the DHT some time to "warm-up" its routing table.
@@ -46,7 +50,7 @@ func startDHT(infoHash string) {
 }
 
 // drainresults loops, printing the address of nodes it has found.
-func drainresults(d *dht.DHT) {
+func (p *PeerProducer) drainresults(d *dht.DHT) {
 	fmt.Println("=========================== DHT")
 	fmt.Printf("Note that there are many bad nodes that reply to anything you ask.")
 	fmt.Printf("Peers found:")
@@ -56,8 +60,7 @@ func drainresults(d *dht.DHT) {
 				addr := dht.DecodePeerAddress(x)
 				addrWithPort := strings.Split(addr, ":")
 				peer := Peer{addrWithPort[0], addrWithPort[1]}
-
-				fmt.Println(peer.ip, peer.port)
+				p.foundPeers <- peer
 			}
 		}
 	}

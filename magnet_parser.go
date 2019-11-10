@@ -15,6 +15,7 @@ func parseValue(value string) string {
 	return decodedValue
 }
 
+// Parse parses a magnet link into a map of query parameters
 func parse(link string) map[string]string {
 
 	droppedPrefix := strings.TrimPrefix(link, "magnet:?")
