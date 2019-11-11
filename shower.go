@@ -2,7 +2,6 @@ package main
 
 import (
 	"flag"
-	"fmt"
 	"log"
 )
 
@@ -24,15 +23,12 @@ func main() {
 	}
 	go peerProducer.startDHT(infoHash)
 	client := TorrentClient{
-		peers: make(map[Peer]bool),
+		peers:    make(map[Peer]PeerConnectionStatus),
+		infoHash: infoHash,
 	}
 	client.handleNewPeer(peerProducer.foundPeers)
-}
 
-func doStuff(chanchan chan int) {
-	fmt.Println("waitin...")
 	for {
-		num := <-chanchan
-		fmt.Println("success!", num)
+		client.connectToPeers()
 	}
 }

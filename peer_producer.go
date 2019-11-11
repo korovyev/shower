@@ -45,7 +45,7 @@ func (p *PeerProducer) startDHT(infoHash string) {
 	for {
 		// Give the DHT some time to "warm-up" its routing table.
 		time.Sleep(5 * time.Second)
-		d.PeersRequest(string(ih), false)
+		d.PeersRequest(string(ih), true)
 	}
 }
 
